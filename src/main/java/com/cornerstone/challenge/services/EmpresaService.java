@@ -1,7 +1,6 @@
 package com.cornerstone.challenge.services;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -14,15 +13,17 @@ import com.cornerstone.challenge.entities.Empresa;
 import com.cornerstone.challenge.entities.Empresas;
 import com.cornerstone.challenge.entities.Movimiento;
 import com.cornerstone.challenge.services.Interfaces.IEmpresaService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 @Service
 public class EmpresaService implements IEmpresaService{
 
     @Override
-    public Empresas leerDatos(String xmlString) throws JsonMappingException, JsonProcessingException {
+    public Empresas leerDatos(String xmlString) throws Exception {
+
+        if (xmlString == null || xmlString.isEmpty()) {
+        throw new Exception("No hay datos de empresas validas en el archivo");
+    }
         
         XmlMapper xmlMapper = new XmlMapper();
 
@@ -41,8 +42,10 @@ public class EmpresaService implements IEmpresaService{
     }
 
     @Override
-    public ByteArrayOutputStream convertirAXLSX(Empresas empresas) throws IOException {
-
+    public ByteArrayOutputStream convertirAXLSX(Empresas empresas) throws Exception {
+        if (empresas.getEmpresaLista().isEmpty()) {
+            throw new Exception("No hay empresas en la lista");
+        }
         List<Empresa> listaEmpresas = empresas.getEmpresaLista();
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream file = new ByteArrayOutputStream()) {
